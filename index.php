@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/inc/db-connect.php';
 require_once __DIR__ . '/inc/functions.php';
-
+//test
 $stmt = $pdo->prepare('SELECT * FROM `entries`');
 $stmt->execute();
 $entries = $stmt->fetchAll(PDO::FETCH_ASSOC);
