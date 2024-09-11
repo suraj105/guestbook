@@ -11,12 +11,12 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="guestbook-heading">Guest Book</h1>
+        <h1 class="guestbook-heading">GuestBook</h1>
         <form method="POST" action="submit.php">
             <?php if(isset($errorMessage)): ?>
                 <p><?php echo e($errorMessage); ?></p>
             <?php endif; ?>
-            <label class="guestbook-entry-label" for="name">Your Name:</label>
+            <label class="guestbook-entry-label" for="name">Name:</label>
             <input 
                 required="required"
                 class="guestbook-entry-input"
@@ -42,14 +42,12 @@
                 name="content"></textarea>
 
             <div class="guestbook-form-buttons">
-                <input class="button" type="reset" value="reset">
-                <input class="button" type="submit" value="submit">
+                <input class="button" type="reset" value="Zurücksetzen">
+                <input class="button" type="submit" value="Absenden">
             </div>
         </form>
 
         <hr class="guestbook-separator" />
-
-        <pre><?php print_r($entries); ?></pre>
 
         <?php foreach($entries AS $entry): ?>
             <?php
@@ -79,27 +77,29 @@
             </div>
         <?php endforeach; ?>
 
-        
+        <?php
+            $numPages = ceil($countTotal / $perPage);
 
-        <ul class="guestbook-pagination">
-            <li class="guestbook-pagination-li">
-                <a class="guestbook-pagination-a guestbook-pagination-active" href="#">1</a>
-            </li>
-            <li class="guestbook-pagination-li">
-                <a class="guestbook-pagination-a" href="#">2</a>
-            </li>
-            <li class="guestbook-pagination-li">
-                <a class="guestbook-pagination-a" href="#">3</a>
-            </li>
-            <li class="guestbook-pagination-li">
-                <a class="guestbook-pagination-a" href="#">4</a>
-            </li>
-        </ul>
+        ?>
+        <?php if ($numPages > 1): ?>
+            <ul class="guestbook-pagination">
+                <?php for($x = 1; $x <= $numPages; $x++): ?>
+                    <li class="guestbook-pagination-li">
+                        <a 
+                            class="guestbook-pagination-a<?php if($x === $currentPage): ?> guestbook-pagination-active<?php endif; ?>" 
+                            href="index.php?<?php echo http_build_query(['page' => $x]); ?>">
+                            
+                            <?php echo e($x); ?>
+                        </a>
+                    </li>
+                <?php endfor; ?>
+            </ul>
+        <?php endif; ?>
 
         <hr class="guestbook-separator" />
 
         <footer class="guestbook-footer">
-            <p>PHP-Kurs</p>
+            <p>Implementiert im PHP-Kurs</p>
         </footer>
 
     </div>

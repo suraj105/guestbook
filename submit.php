@@ -3,36 +3,32 @@
 require_once __DIR__ . '/inc/db-connect.php';
 require_once __DIR__ . '/inc/functions.php';
 
-if (!empty($_POST)) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST)) {
 
-    $title = '';
-    if (isset($_POST['title'])) {
-        $title = @(string) $_POST['title'];
+    // Fetch input values safely and trim them to avoid unnecessary spaces
+    $title = isset($_POST['title']) ? trim((string)$_POST['title']) : '';
+    $name = isset($_POST['name']) ? trim((string)$_POST['name']) : '';
+    $content = isset($_POST['content']) ? trim((string)$_POST['content']) : '';
+
+    // Check if all required fields are provided
+    if ($title && $name && $content) {
+        // Use a prepared statement for inserting into the database
+        $stmt = $pdo->prepare('INSERT INTO entries (name, title, content) VALUES (:name, :title, :content)');
+        $stmt->execute([
+            ':name' => $name,
+            ':title' => $title,
+            ':content' => $content
+        ]);
+
+        // Redirect after successful entry to avoid resubmission on page reload
+        header('Location: index.php');
+        exit();
+    } else {
+        $errorMessage = 'Please fill in all the required fields.';
     }
-
-    $name = '';
-    if (isset($_POST['name'])) {
-        $name = @(string) $_POST['name'];
-    }
-
-    $content = '';
-    if (isset($_POST['content'])) {
-        $content = @(string) $_POST['content'];
-        
-    }
-
-    if (!empty($title) && !empty($name) && !empty($content)) {
-        $stmt = $pdo->prepare('INSERT INTO entries (`name`, `title`, `content`) VALUES (:name, :title, :content)');
-        $stmt->bindValue('name', $name);
-        $stmt->bindValue('title', $title);
-        $stmt->bindValue('content', $content);
-        $stmt->execute();
-
-        echo '<a href="index.php">Zurück zum Gästebuch...</a>';
-        die();
-    }
+} else {
+    $errorMessage = 'There was an error processing your request.';
 }
 
-$errorMessage = 'Es ist ein Fehler aufgetreten...';
+// Render the index page with an error message (if applicable)
 require __DIR__ . '/index.php';
-
